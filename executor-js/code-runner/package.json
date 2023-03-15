@@ -1,0 +1,24 @@
+{
+  "name": "code-runner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    },
+    "testTimeout": 3000
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/preset-env": "^7.20.2",
+    "ansi-regex": "^6.0.1",
+    "fs": "^0.0.1-security",
+    "jest": "^29.5.0"
+  }
+}
