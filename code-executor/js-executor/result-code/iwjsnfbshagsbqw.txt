@@ -1,0 +1,3 @@
+case no 0=pass=5
+case no 1=pass=7
+case no 2=failed=6

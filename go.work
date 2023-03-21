@@ -1,6 +1,7 @@
 go 1.19
 
 use (
+	./code-executor
+	./files-storage
 	./server
-	./storage
 )

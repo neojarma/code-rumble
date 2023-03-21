@@ -11,7 +11,7 @@ import (
 
 func GetConnectionMySQL() (*gorm.DB, error) {
 	// DB_URL := os.Getenv("DB_URL")
-	DB_URL := "root:secretrootpassword@tcp(localhost:3306)/code_rumble?charset=utf8mb4&parseTime=True&loc=Local	"
+	DB_URL := "root:secretrootpassword@tcp(localhost:3306)/code_rumble?charset=utf8mb4&parseTime=True&loc=Local"
 
 	maxTries := 10
 	for i := 0; i < maxTries; i++ {

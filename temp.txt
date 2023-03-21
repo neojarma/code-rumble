@@ -1,0 +1,32 @@
+1. question query done
+2. /submission
+    client : 
+        - POST source code
+        - question id
+    server :
+        - create stub code generate
+        - query question 
+        - POST to rabbitmq along with question, test case, upload source code
+        - POST to db with status submitted (submitted, process, finished)
+        - get files-storage soal runner
+    executor :
+        - listen to rabbitmq event
+        - write the code to uploaded code
+        - write and replace main_master.js
+        - execute the code write to log file
+        - go read the log and do callback function to save to db
+        - clear 
+    client :
+        - read data from endpoint GET /submission/id
+
+refactor
+    func name | 
+    sum       |  
+
+    params_id | param_name | data_type
+    1         | a          | int
+
+db 
+    submit_id | submit_source_code | question_id | status | result
+    - status (submitted, process, finished)
+    - result (accepted, rejected)

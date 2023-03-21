@@ -1,7 +1,6 @@
 package entity
 
 type Question struct {
-	ID           string `json:"id"`
-	Description  string `json:"description"`
-	TemplateCode string `json:"templateCode"`
+	QuestionId  string `json:"questionId"`
+	Description string `json:"description"`
 }
