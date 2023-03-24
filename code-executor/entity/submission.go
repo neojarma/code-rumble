@@ -18,18 +18,3 @@ func (s *Submission) ToString() string {
 
 	return string(b)
 }
-
-type TestCase struct {
-	TestCaseId string `json:"id,omitempty"`
-	QuestionId string `json:"-"`
-	Input      string `json:"input"`
-	Output     string `json:"output"`
-}
-
-type TestResult struct {
-	CaseNumber     string `json:"caseNumber"`
-	Input          string `json:"input"`
-	ExpectedOutput string `json:"expectedOutput"`
-	ActualOutput   string `json:"actualOutput"`
-	Status         string `json:"status"`
-}

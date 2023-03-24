@@ -8,4 +8,5 @@ type ServerHandler interface {
 	GetQuestionAndTestCase(c echo.Context) error
 	CreateNewQuestion(c echo.Context) error
 	SubmitCode(c echo.Context) error
+	GetSubmissionData(c echo.Context) error
 }

@@ -1,23 +1,25 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 	"server/entity"
 	"server/entity/join_model"
 	questions_use_case "server/use_case/questions_use_case"
+	"server/use_case/submission_use_case"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
 type ServerHandlerImpl struct {
-	UseCase questions_use_case.QuestionUseCase
+	UseCase           questions_use_case.QuestionUseCase
+	SubmissionUseCase submission_use_case.SubmissionUseCase
 }
 
-func NewServerHandler(useCase questions_use_case.QuestionUseCase) ServerHandler {
+func NewServerHandler(useCase questions_use_case.QuestionUseCase, s submission_use_case.SubmissionUseCase) ServerHandler {
 	return &ServerHandlerImpl{
-		UseCase: useCase,
+		UseCase:           useCase,
+		SubmissionUseCase: s,
 	}
 }
 
@@ -116,7 +118,43 @@ func (h *ServerHandlerImpl) CreateNewQuestion(c echo.Context) error {
 }
 
 func (h *ServerHandlerImpl) SubmitCode(c echo.Context) error {
-	// request := new(entity.Submission)
-	log.Println("here")
-	return c.File("input.txt")
+	request := new(entity.SubmissionPayload)
+	if err := c.Bind(request); err != nil {
+		return c.JSON(http.StatusBadRequest, entity.Response{
+			Message: "invalid body request",
+		})
+	}
+
+	id, err := h.SubmissionUseCase.NewSubmission(request)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, entity.Response{
+			Message: "failed to submit code",
+		})
+	}
+
+	return c.JSON(http.StatusCreated, entity.Response{
+		Message: "success submit code",
+		Data:    id,
+	})
+}
+
+func (h *ServerHandlerImpl) GetSubmissionData(c echo.Context) error {
+	id := c.QueryParam("id")
+	if id == "" {
+		return c.JSON(http.StatusBadRequest, entity.Response{
+			Message: "invalid question id",
+		})
+	}
+
+	res, err := h.SubmissionUseCase.GetSubmission(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, entity.Response{
+			Message: "failed to get data",
+		})
+	}
+
+	return c.JSON(http.StatusOK, entity.Response{
+		Message: "success to get data",
+		Data:    res,
+	})
 }

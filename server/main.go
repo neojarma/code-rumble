@@ -14,7 +14,12 @@ func main() {
 		log.Println(err)
 	}
 
+	rabbitConn, err := connection.GetConnectionRabbitMq()
+	if err != nil {
+		log.Println(err)
+	}
+
 	e := echo.New()
-	router.Router(sqlConn, e)
+	router.Router(sqlConn, e, rabbitConn)
 	e.Logger.Fatal(e.Start(":8081"))
 }

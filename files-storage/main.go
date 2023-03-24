@@ -13,7 +13,6 @@ func main() {
 		id := c.QueryParam("id")
 
 		path := fmt.Sprintf("./questions/%s/%s.js", id, id)
-		fmt.Println(path)
 		return c.File(path)
 	})
 

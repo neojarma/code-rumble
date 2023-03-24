@@ -51,7 +51,6 @@ func (useCase *QuestionUseCaseImpl) GetQuestions(limit int, offset int) ([]*join
 
 func (useCase *QuestionUseCaseImpl) GetQuestionById(id string) (*join_model.QuestionAswer, error) {
 	return useCase.QuestionRepo.GetQuestionById(id)
-
 }
 
 func (useCase *QuestionUseCaseImpl) GetQuestionAndTestCase(id string, limit int) (*join_model.QuestionAnswerMultiTest, error) {

@@ -1,4 +1,4 @@
-import * as fs from 'fs'
+import * as fs from "fs"
 
 class ImportError extends Error { }
 
@@ -10,40 +10,37 @@ const loadModule = async (modulePath) => {
     }
 }
 
-
 (async function main() {
+    const submissionId = process.argv[2]
+    const mod = await loadModule(`../submitted-code/${submissionId}.js`)
+    const testCases = JSON.parse(process.argv[3])
 
-    const path = process.argv[2] // submission id
-    const param = process.argv[3]
+    let fileContentResult = ""
 
-    console.log(path)
-    console.log(param)
-    // let mod = await loadModule(`../uploaded-code/${path}.js`)
+    try {
 
-    // try {
-    //     const testcases = [process.argv[3]]
-    //     for (let i = 0; i < testcases.length; i++) {
-    //         let input = testcases[i].input.split("\n").map(v => parseInt(v))
-    //         let output = parseInt(testcases[i].output)
+        testCases.forEach((test, i) => {
+            const input = test["input"].split("\n").map(v => parseInt(v))
+            const output = parseInt(test["output"])
+            const result = mod.sum(input[0], input[1])
 
-    //         const result = mod.sum(input[0], input[1])
+            if (result === output) {
+                fileContentResult += `${test["id"]}=pass=${result}\n`
+            } else {
+                if (i == testCases.length - 1) {
+                    fileContentResult += `${test["id"]}=failed=${result}`
+                } else {
+                    fileContentResult += `${test["id"]}=failed=${result}\n`
+                }
+            }
+        })
 
-    //         const outputPath = `../output-code/${path}`
-    //         if (result != output) {
-    //             let content = `case no ${i}: failed`
-    //             fs.appendFile(`../output-code/${outputPath}.txt`, content, err => {
-    //                 if (err) console.log(err)
-    //             })
-    //         } else {
-    //             let content = `case no ${i}: success`
-    //             fs.appendFile(`../output-code/${outputPath}.txt`, content, err => {
-    //                 if (err) console.log(err)
-    //             })
-    //         }
-    //     }
-    // } catch (error) {
-    //     console.log("invalid function")
-    // } finally {
-    //     console.log('finish')
-    // }
+    } catch (error) {
+        fileContentResult.result = "all case failed"
+
+    } finally {
+        const outPath = `./js-executor/result-code/${submissionId}.txt`
+        fs.writeFileSync(outPath, fileContentResult)
+        console.log("finish")
+    }
 })()

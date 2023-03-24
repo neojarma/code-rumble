@@ -1,9 +1,10 @@
 package entity
 
-type Submission struct {
+type SubmissionPayload struct {
 	SubmissionId   string      `json:"submissionId"`
 	QuestionId     string      `json:"questionId"`
-	SourceCode     string      `json:"sourceCode"`
+	SubmittedCode  string      `json:"submittedCode"`
 	CustomTestCase bool        `json:"customTestCase"`
-	TestCase       []*TestCase `json:"testCase,omitempty"`
+	RunCode        string      `json:"runCode"`
+	TestCases      []*TestCase `json:"testCases,omitempty"`
 }
