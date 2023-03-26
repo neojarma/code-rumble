@@ -1,0 +1,4 @@
+export function {{f_name}}({{params}}) {
+    // write your code here
+    
+}

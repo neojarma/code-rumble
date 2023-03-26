@@ -7,7 +7,7 @@ import (
 
 type QuestionRepository interface {
 	CreateNewQuestion(model *entity.Question) error
-	GetQuestions(limit, offset int) ([]*join_model.QuestionAswer, error)
-	GetQuestionById(id string) (*join_model.QuestionAswer, error)
+	GetQuestions(limit, offset int) ([]*entity.Question, error)
+	GetQuestionById(id string) (*entity.Question, error)
 	GetQuestionAndTestCase(id string, limit int) (*join_model.QuestionAnswerMultiTest, error)
 }

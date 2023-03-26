@@ -1,0 +1,4 @@
+export function birthday(s,d,m) {
+    // write your code here
+    
+}

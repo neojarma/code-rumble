@@ -20,12 +20,16 @@ const loadModule = async (modulePath) => {
     try {
 
         testCases.forEach((test, i) => {
-            const input = test["input"].split("\n").map(v => parseInt(v))
-            const output = parseInt(test["output"])
-            const result = mod.sum(input[0], input[1])
+            const output  = {{parse_return_replace}} 
+            const rawInput = test["input"].split("\n")
+            const result = mod.{{function_name_replace}}({{loop_params_replace}})
 
             if (result === output) {
-                fileContentResult += `${test["id"]}=pass=${result}\n`
+                if (i == testCases.length - 1) {
+                    fileContentResult += `${test["id"]}=pass=${result}`
+                } else {
+                    fileContentResult += `${test["id"]}=pass=${result}\n`
+                }
             } else {
                 if (i == testCases.length - 1) {
                     fileContentResult += `${test["id"]}=failed=${result}`

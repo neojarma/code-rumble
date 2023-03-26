@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"server/entity"
-	"server/entity/join_model"
 	questions_use_case "server/use_case/questions_use_case"
 	"server/use_case/submission_use_case"
 	"strconv"
@@ -98,8 +98,9 @@ func (h *ServerHandlerImpl) GetQuestionAndTestCase(c echo.Context) error {
 }
 
 func (h *ServerHandlerImpl) CreateNewQuestion(c echo.Context) error {
-	request := new(join_model.QuestionAnswerTest)
+	request := new(entity.QuestionPayload)
 	if err := c.Bind(request); err != nil {
+		log.Println(err)
 		return c.JSON(http.StatusBadRequest, entity.Response{
 			Message: "invalid body request",
 		})
@@ -109,6 +110,7 @@ func (h *ServerHandlerImpl) CreateNewQuestion(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, entity.Response{
 			Message: "failed to create data",
+			Data:    err.Error,
 		})
 	}
 

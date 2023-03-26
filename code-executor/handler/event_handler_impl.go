@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"executor/entity"
 	test_use_case "executor/use_case/test_result_use_case"
 	"fmt"
@@ -9,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"runtime"
 	serv "server/entity"
 	"server/helper"
 	"server/repository/submission_repository"
@@ -48,16 +48,25 @@ func (h *EventHandlerImpl) HandleEvent(event *entity.Submission) {
 	}
 
 	cmd := fmt.Sprintf("node ./js-executor/run-code/%s.js %s %v", event.SubmissionId, event.SubmissionId, event.ToString())
+	log.Println(cmd)
+	// if runtime.GOOS == "windows" {
+	// 	_, err = exec.Command("cmd", "/C", cmd).Output()
+	// } else {
+	// 	_, err = exec.Command("bash", "-c", cmd).Output()
+	// }
+	// if err != nil {
+	// 	log.Println("error executing command", err)
+	// 	return
+	// }
 
-	if runtime.GOOS == "windows" {
-		_, err = exec.Command("cmd", "/C", cmd).Output()
-	} else {
-		_, err = exec.Command("bash", "-c", cmd).Output()
-	}
-	if err != nil {
-		log.Println("error executing command", err)
-		return
-	}
+	cmde := exec.Command("cmd", "/C", cmd)
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmde.Stdout = &out
+	cmde.Stderr = &stderr
+	err = cmde.Run()
+	fmt.Println(fmt.Sprint(out) + ": " + stderr.String())
+	// fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
 
 	res, err := parsingResultFile(event)
 	if err != nil {
@@ -90,7 +99,7 @@ func parsingResultFile(event *entity.Submission) ([]*entity.TestResult, error) {
 	}
 
 	resLine := strings.Split(string(b), "\n")
-	finalResult := make([]*entity.TestResult, len(resLine)-1)
+	finalResult := make([]*entity.TestResult, len(resLine))
 
 	for i := 0; i < len(finalResult); i++ {
 		each := strings.Split(resLine[i], "=")

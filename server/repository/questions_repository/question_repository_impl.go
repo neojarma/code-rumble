@@ -23,12 +23,11 @@ func (repo *QuestionRepositoryImpl) CreateNewQuestion(model *entity.Question) er
 	return repo.DB.Create(model).Error
 }
 
-func (repo *QuestionRepositoryImpl) GetQuestions(limit int, offset int) ([]*join_model.QuestionAswer, error) {
-	question := new(entity.Question)
-	result := make([]*join_model.QuestionAswer, 0)
+func (repo *QuestionRepositoryImpl) GetQuestions(limit int, offset int) ([]*entity.Question, error) {
+	result := make([]*entity.Question, 0)
 	paging := helper.Pagination(limit, offset)
 
-	err := repo.DB.Model(question).Select("questions.question_id, questions.description, answers.answer_id, answers.template_code").Joins("JOIN answers ON questions.question_id = answers.question_id").Scopes(paging).Find(&result).Error
+	err := repo.DB.Select("questions.question_id, questions.description, questions.title").Scopes(paging).Find(&result).Error
 	if err != nil {
 		return nil, err
 	}
@@ -37,11 +36,10 @@ func (repo *QuestionRepositoryImpl) GetQuestions(limit int, offset int) ([]*join
 
 }
 
-func (repo *QuestionRepositoryImpl) GetQuestionById(id string) (*join_model.QuestionAswer, error) {
-	question := new(entity.Question)
-	result := new(join_model.QuestionAswer)
+func (repo *QuestionRepositoryImpl) GetQuestionById(id string) (*entity.Question, error) {
+	result := new(entity.Question)
 
-	queryResult := repo.DB.Model(question).Select("questions.question_id, questions.description, answers.answer_id, answers.template_code").Joins("JOIN answers ON questions.question_id = answers.question_id").Where("questions.question_id = ?", id).Find(&result)
+	queryResult := repo.DB.Select("questions.question_id, questions.title, questions.description").Where("questions.question_id = ?", id).Find(&result)
 	if queryResult.Error != nil {
 		return nil, queryResult.Error
 	}
@@ -58,7 +56,7 @@ func (repo *QuestionRepositoryImpl) GetQuestionAndTestCase(id string, limit int)
 	queryRes := new(join_model.QuestionAnswerTest)
 	result := new(join_model.QuestionAnswerMultiTest)
 
-	r, err := repo.DB.Model(question).Select("questions.question_id, questions.description, answers.answer_id, answers.template_code, test_cases.test_case_id, test_cases.input, test_cases.output").Joins("JOIN answers ON questions.question_id = answers.question_id").Joins("JOIN test_cases ON questions.question_id = test_cases.question_id").Where("questions.question_id = ?", id).Limit(limit).Rows()
+	r, err := repo.DB.Model(question).Select("questions.question_id, questions.title, questions.description, test_cases.test_case_id, test_cases.input, test_cases.output").Joins("JOIN test_cases ON questions.question_id = test_cases.question_id").Where("questions.question_id = ?", id).Limit(limit).Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -73,11 +71,7 @@ func (repo *QuestionRepositoryImpl) GetQuestionAndTestCase(id string, limit int)
 			result.Question = &entity.Question{
 				QuestionId:  queryRes.Question.QuestionId,
 				Description: queryRes.Question.Description,
-			}
-
-			result.Answer = &entity.Answer{
-				AnswerID:     queryRes.Answer.AnswerID,
-				TemplateCode: queryRes.Answer.TemplateCode,
+				Title:       queryRes.Question.Title,
 			}
 		}
 

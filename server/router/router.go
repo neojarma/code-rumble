@@ -2,11 +2,10 @@ package router
 
 import (
 	"server/handler"
-	"server/repository/answer_repository"
 	question_repository "server/repository/questions_repository"
 	"server/repository/submission_repository"
 	"server/repository/test_cases_repository"
-	"server/use_case/answer_use_case"
+	generate_code "server/use_case/generate_code_use_case"
 	question_use_case "server/use_case/questions_use_case"
 	"server/use_case/submission_use_case"
 	"server/use_case/test_use_case"
@@ -18,15 +17,12 @@ import (
 
 func Router(db *gorm.DB, e *echo.Echo, rabbitConn *amqp091.Connection) {
 
-	answerRepo := answer_repository.NewAnswerRepository(db)
-	answerUseCase := answer_use_case.NewAnswerUseCase(answerRepo)
-
 	testRepo := test_cases_repository.NewTestCaseRepository(db)
 	testUseCase := test_use_case.NewTestUseCase(testRepo)
-
+	generateCode := generate_code.NewGenerateCode()
 	submissionRepo := submission_repository.NewSubmissionRepository(db)
 	questionRepo := question_repository.NewQuestionRepository(db)
-	questionUseCase := question_use_case.NewQuestionUseCase(questionRepo, answerUseCase, testUseCase)
+	questionUseCase := question_use_case.NewQuestionUseCase(questionRepo, testUseCase, generateCode, rabbitConn)
 	submissionUseCase := submission_use_case.NewSubmissionUseCase(submissionRepo, questionUseCase, rabbitConn)
 
 	handler := handler.NewServerHandler(questionUseCase, submissionUseCase)

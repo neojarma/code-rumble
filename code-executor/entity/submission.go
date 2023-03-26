@@ -1,6 +1,9 @@
 package entity
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"strings"
+)
 
 type Submission struct {
 	SubmissionId  string      `json:"submissionId"`
@@ -16,5 +19,5 @@ func (s *Submission) ToString() string {
 		return ""
 	}
 
-	return string(b)
+	return strings.ReplaceAll(string(b), "\n", "\\n")
 }

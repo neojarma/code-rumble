@@ -19,3 +19,7 @@ func NewTestCaseRepository(db *gorm.DB) TestCaseRepository {
 func (repo *TestCaseRepositoryImpl) CreateNewTestCase(model *entity.TestCase) error {
 	return repo.DB.Create(model).Error
 }
+
+func (repo *TestCaseRepositoryImpl) CreateBulkTestCase(req []*entity.TestCase) error {
+	return repo.DB.Create(&req).Error
+}

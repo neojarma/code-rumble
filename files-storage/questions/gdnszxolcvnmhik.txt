@@ -1,0 +1,3 @@
+import*as t from"fs";class ImportError extends Error{}let loadModule=async t=>{try{return await import(t)}catch(e){throw new ImportError(`Unable to import module ${t}`)}};!async function e(){let a=process.argv[2],l=await loadModule(`../submitted-code/${a}.js`),r=JSON.parse(process.argv[3]),o="";try{r.forEach((t,e)=>{let a=t.input.split("\n").map(t=>parseInt(t)),i=parseInt(t.output),s=l.sum(a[0],a[1]);s===i?e==r.length-1?o+=`${t.id}=pass=${s}`:o+=`${t.id}=pass=${s}
+`:e==r.length-1?o+=`${t.id}=failed=${s}`:o+=`${t.id}=failed=${s}
+`})}catch(i){o.result="all case failed"}finally{let s=`./js-executor/result-code/${a}.txt`;t.writeFileSync(s,o),console.log("finish")}}();

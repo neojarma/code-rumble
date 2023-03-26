@@ -21,3 +21,12 @@ func (useCase *TestUseCaseImpl) CreateNewTestCase(model *entity.TestCase) error 
 	model.TestCaseId = id
 	return useCase.Repo.CreateNewTestCase(model)
 }
+
+func (usecase *TestUseCaseImpl) CreateBulkTestCase(req []*entity.TestCase, questionId string) error {
+	for _, v := range req {
+		v.QuestionId = questionId
+		v.TestCaseId = helper.GenerateId(15)
+	}
+
+	return usecase.Repo.CreateBulkTestCase(req)
+}
