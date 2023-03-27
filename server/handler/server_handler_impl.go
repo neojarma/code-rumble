@@ -142,13 +142,18 @@ func (h *ServerHandlerImpl) SubmitCode(c echo.Context) error {
 
 func (h *ServerHandlerImpl) GetSubmissionData(c echo.Context) error {
 	id := c.QueryParam("id")
+	isCustomTest, err := strconv.ParseBool(c.QueryParam("custom-test"))
 	if id == "" {
 		return c.JSON(http.StatusBadRequest, entity.Response{
 			Message: "invalid question id",
 		})
 	}
 
-	res, err := h.SubmissionUseCase.GetSubmission(id)
+	if err != nil {
+		isCustomTest = false
+	}
+
+	res, err := h.SubmissionUseCase.GetSubmission(id, isCustomTest)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, entity.Response{
 			Message: "failed to get data",

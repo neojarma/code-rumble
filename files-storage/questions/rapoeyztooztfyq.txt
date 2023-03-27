@@ -10,10 +10,14 @@ const loadModule = async (modulePath) => {
     }
 }
 
+function loadTestCases(path) {
+    return fs.readFileSync(path)
+}
+
 (async function main() {
     const submissionId = process.argv[2]
     const mod = await loadModule(`../submitted-code/${submissionId}.js`)
-    const testCases = JSON.parse(process.argv[3])
+    const testCases = JSON.parse(loadTestCases(`./js-executor/test-cases/${submissionId}.json`))
 
     let fileContentResult = ""
 
@@ -26,15 +30,15 @@ const loadModule = async (modulePath) => {
 
             if (result === output) {
                 if (i == testCases.length - 1) {
-                    fileContentResult += `${test["id"]}=pass=${result}`
+                    fileContentResult += `${test["id"]}=pass=${result}=${output}`
                 } else {
-                    fileContentResult += `${test["id"]}=pass=${result}\n`
+                    fileContentResult += `${test["id"]}=pass=${result}=${output}\n`
                 }
             } else {
                 if (i == testCases.length - 1) {
-                    fileContentResult += `${test["id"]}=failed=${result}`
+                    fileContentResult += `${test["id"]}=failed=${result}=${output}`
                 } else {
-                    fileContentResult += `${test["id"]}=failed=${result}\n`
+                    fileContentResult += `${test["id"]}=failed=${result}=${output}\n`
                 }
             }
         })

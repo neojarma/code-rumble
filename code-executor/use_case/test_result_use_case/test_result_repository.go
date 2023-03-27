@@ -4,4 +4,5 @@ import "executor/entity"
 
 type TestResultUseCase interface {
 	CreateTestResult(results []*entity.TestResult) error
+	CreateCustomTestResult(results []*entity.CustomTestResult) error
 }

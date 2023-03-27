@@ -1,6 +1,7 @@
 package router
 
 import (
+	custom_test_repo "executor/repository/test_result_repository"
 	"server/handler"
 	question_repository "server/repository/questions_repository"
 	"server/repository/submission_repository"
@@ -17,13 +18,14 @@ import (
 
 func Router(db *gorm.DB, e *echo.Echo, rabbitConn *amqp091.Connection) {
 
+	customTestRepo := custom_test_repo.NewTestResult(db)
 	testRepo := test_cases_repository.NewTestCaseRepository(db)
 	testUseCase := test_use_case.NewTestUseCase(testRepo)
 	generateCode := generate_code.NewGenerateCode()
 	submissionRepo := submission_repository.NewSubmissionRepository(db)
 	questionRepo := question_repository.NewQuestionRepository(db)
 	questionUseCase := question_use_case.NewQuestionUseCase(questionRepo, testUseCase, generateCode, rabbitConn)
-	submissionUseCase := submission_use_case.NewSubmissionUseCase(submissionRepo, questionUseCase, rabbitConn)
+	submissionUseCase := submission_use_case.NewSubmissionUseCase(submissionRepo, questionUseCase, rabbitConn, customTestRepo)
 
 	handler := handler.NewServerHandler(questionUseCase, submissionUseCase)
 

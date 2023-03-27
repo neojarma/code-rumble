@@ -18,3 +18,7 @@ func NewTestResult(repo test_repository.TestResultRepository) TestResultUseCase 
 func (r *TestResultUseCaseImpl) CreateTestResult(results []*entity.TestResult) error {
 	return r.Repo.CreateTestResult(results)
 }
+
+func (r *TestResultUseCaseImpl) CreateCustomTestResult(results []*entity.CustomTestResult) error {
+	return r.Repo.CreateCustomTestResult(results)
+}

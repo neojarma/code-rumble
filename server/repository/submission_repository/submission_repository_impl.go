@@ -38,7 +38,10 @@ func (r *SubmissionRepositoryImpl) GetSubmission(id string) (*join_model.Submiss
 
 	counter := 0
 	for rows.Next() {
-		r.DB.ScanRows(rows, queryRes)
+		err := r.DB.ScanRows(rows, queryRes)
+		if err != nil {
+			return nil, err
+		}
 
 		if counter == 0 {
 			finalRes.QuestionId = queryRes.QuestionId

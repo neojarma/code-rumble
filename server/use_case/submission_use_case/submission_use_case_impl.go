@@ -3,6 +3,7 @@ package submission_use_case
 import (
 	"context"
 	"encoding/json"
+	custom_test_repo "executor/repository/test_result_repository"
 	"fmt"
 	"server/entity"
 	"server/entity/join_model"
@@ -18,13 +19,15 @@ type SubmissionUseCaseImpl struct {
 	Repo            submission_repository.SubmissionRepository
 	QuestionUseCase question_use_case.QuestionUseCase
 	RabbitConn      *amqp091.Connection
+	CustomTestRepo  custom_test_repo.TestResultRepository
 }
 
-func NewSubmissionUseCase(r submission_repository.SubmissionRepository, q question_use_case.QuestionUseCase, c *amqp091.Connection) SubmissionUseCase {
+func NewSubmissionUseCase(r submission_repository.SubmissionRepository, q question_use_case.QuestionUseCase, c *amqp091.Connection, cTR custom_test_repo.TestResultRepository) SubmissionUseCase {
 	return &SubmissionUseCaseImpl{
 		Repo:            r,
 		QuestionUseCase: q,
 		RabbitConn:      c,
+		CustomTestRepo:  cTR,
 	}
 }
 
@@ -75,7 +78,11 @@ func (u *SubmissionUseCaseImpl) NewSubmission(req *entity.SubmissionPayload) (st
 	return id, err
 }
 
-func (u *SubmissionUseCaseImpl) GetSubmission(id string) (*join_model.SubmissionTestResult, error) {
+func (u *SubmissionUseCaseImpl) GetSubmission(id string, isCustomTest bool) (*join_model.SubmissionTestResult, error) {
+	if isCustomTest {
+		return u.CustomTestRepo.GetCustomTestResult(id)
+	}
+
 	return u.Repo.GetSubmission(id)
 }
 

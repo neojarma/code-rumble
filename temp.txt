@@ -33,3 +33,9 @@ db
 
 
 json write file log
+
+custom input
+
+recode result
+write to new table
+get with param custom?true

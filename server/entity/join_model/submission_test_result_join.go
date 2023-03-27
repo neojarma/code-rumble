@@ -1,9 +1,9 @@
 package join_model
 
 type SubmissionTestResult struct {
-	SubmissionId     string              `json:"submissionId"`
-	SubmissionStatus string              `json:"submissionStatus"`
-	QuestionId       string              `json:"questionId"`
+	SubmissionId     string              `json:"submissionId,omitempty"`
+	SubmissionStatus string              `json:"submissionStatus,omitempty"`
+	QuestionId       string              `json:"questionId,omitempty"`
 	TestResult       []*SubmissionResult `json:"testResult"`
 }
 
