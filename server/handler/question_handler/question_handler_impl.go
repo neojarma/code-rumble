@@ -1,29 +1,26 @@
-package handler
+package question_handler
 
 import (
 	"log"
 	"net/http"
 	"server/entity"
 	questions_use_case "server/use_case/questions_use_case"
-	"server/use_case/submission_use_case"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
-type ServerHandlerImpl struct {
-	UseCase           questions_use_case.QuestionUseCase
-	SubmissionUseCase submission_use_case.SubmissionUseCase
+type QuestionHandlerImpl struct {
+	UseCase questions_use_case.QuestionUseCase
 }
 
-func NewServerHandler(useCase questions_use_case.QuestionUseCase, s submission_use_case.SubmissionUseCase) ServerHandler {
-	return &ServerHandlerImpl{
-		UseCase:           useCase,
-		SubmissionUseCase: s,
+func NewQuestionHandler(uc questions_use_case.QuestionUseCase) QuestionHandler {
+	return &QuestionHandlerImpl{
+		UseCase: uc,
 	}
 }
 
-func (h *ServerHandlerImpl) GetQuestions(c echo.Context) error {
+func (h *QuestionHandlerImpl) GetQuestions(c echo.Context) error {
 
 	limit, err := strconv.Atoi(c.QueryParam("limit"))
 	if err != nil {
@@ -46,11 +43,9 @@ func (h *ServerHandlerImpl) GetQuestions(c echo.Context) error {
 		Message: "succes get data",
 		Data:    res,
 	})
-
 }
 
-func (h *ServerHandlerImpl) GetQuestionById(c echo.Context) error {
-
+func (h *QuestionHandlerImpl) GetQuestionById(c echo.Context) error {
 	id := c.QueryParam("id")
 	if id == "" {
 		return c.JSON(http.StatusBadRequest, entity.Response{
@@ -71,7 +66,7 @@ func (h *ServerHandlerImpl) GetQuestionById(c echo.Context) error {
 	})
 }
 
-func (h *ServerHandlerImpl) GetQuestionAndTestCase(c echo.Context) error {
+func (h *QuestionHandlerImpl) GetQuestionAndTestCase(c echo.Context) error {
 	id := c.QueryParam("id")
 	limit, err := strconv.Atoi(c.QueryParam("limit"))
 	if id == "" {
@@ -97,7 +92,7 @@ func (h *ServerHandlerImpl) GetQuestionAndTestCase(c echo.Context) error {
 	})
 }
 
-func (h *ServerHandlerImpl) CreateNewQuestion(c echo.Context) error {
+func (h *QuestionHandlerImpl) CreateNewQuestion(c echo.Context) error {
 	request := new(entity.QuestionPayload)
 	if err := c.Bind(request); err != nil {
 		log.Println(err)
@@ -116,52 +111,5 @@ func (h *ServerHandlerImpl) CreateNewQuestion(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, entity.Response{
 		Message: "succes create data",
-	})
-}
-
-func (h *ServerHandlerImpl) SubmitCode(c echo.Context) error {
-	request := new(entity.SubmissionPayload)
-	if err := c.Bind(request); err != nil {
-		return c.JSON(http.StatusBadRequest, entity.Response{
-			Message: "invalid body request",
-		})
-	}
-
-	id, err := h.SubmissionUseCase.NewSubmission(request)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, entity.Response{
-			Message: "failed to submit code",
-		})
-	}
-
-	return c.JSON(http.StatusCreated, entity.Response{
-		Message: "success submit code",
-		Data:    id,
-	})
-}
-
-func (h *ServerHandlerImpl) GetSubmissionData(c echo.Context) error {
-	id := c.QueryParam("id")
-	isCustomTest, err := strconv.ParseBool(c.QueryParam("custom-test"))
-	if id == "" {
-		return c.JSON(http.StatusBadRequest, entity.Response{
-			Message: "invalid question id",
-		})
-	}
-
-	if err != nil {
-		isCustomTest = false
-	}
-
-	res, err := h.SubmissionUseCase.GetSubmission(id, isCustomTest)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, entity.Response{
-			Message: "failed to get data",
-		})
-	}
-
-	return c.JSON(http.StatusOK, entity.Response{
-		Message: "success to get data",
-		Data:    res,
 	})
 }
