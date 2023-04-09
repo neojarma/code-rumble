@@ -21,7 +21,7 @@ func GetConnectionRabbitMq() (*amqp.Connection, error) {
 		}
 
 		log.Println("failed to connect to rabbimq, try again in 1 minute")
-		time.Sleep(1 * time.Second)
+		time.Sleep(1 * time.Minute)
 	}
 
 	return nil, errors.New("rabbitmq connection failed after 10 minute")
