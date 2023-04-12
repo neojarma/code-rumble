@@ -111,3 +111,26 @@ func (useCase *QuestionUseCaseImpl) GetQuestionById(id string) (*join_model.Ques
 func (useCase *QuestionUseCaseImpl) GetQuestionAndTestCase(id string, limit int) (*join_model.QuestionAnswerMultiTest, error) {
 	return useCase.QuestionRepo.GetQuestionAndTestCase(id, limit)
 }
+
+func (useCase *QuestionUseCaseImpl) GetRandomQuestions(limit int) ([]*entity.RandQuestion, error) {
+	res, err := useCase.QuestionRepo.GetRandomQuestions(limit)
+	if err != nil {
+		return nil, err
+	}
+
+	questionAnswer := make([]*entity.RandQuestion, len(res))
+
+	for i, v := range res {
+		b, err := helper.GetStubCode(fmt.Sprintf("http://127.0.0.1:8082/file?id=%s_answer", v.QuestionId))
+		if err != nil {
+			return nil, err
+		}
+
+		questionAnswer[i] = &entity.RandQuestion{
+			Question: v,
+			StubCode: string(b),
+		}
+	}
+
+	return questionAnswer, nil
+}

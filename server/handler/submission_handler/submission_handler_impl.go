@@ -21,13 +21,19 @@ func NewSubmissionHandler(uc submission_use_case.SubmissionUseCase) SubmissionHa
 
 func (h *SubmissionHandlerImpl) SubmitCode(c echo.Context) error {
 	request := new(entity.SubmissionPayload)
+
 	if err := c.Bind(request); err != nil {
 		return c.JSON(http.StatusBadRequest, entity.Response{
 			Message: "invalid body request",
 		})
 	}
 
-	id, err := h.SubmissionUseCase.NewSubmission(request)
+	testCaseLimit, err := strconv.Atoi(c.QueryParam("test-limit"))
+	if err != nil {
+		testCaseLimit = -1
+	}
+
+	id, err := h.SubmissionUseCase.NewSubmission(request, int(testCaseLimit))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, entity.Response{
 			Message: "failed to submit code",

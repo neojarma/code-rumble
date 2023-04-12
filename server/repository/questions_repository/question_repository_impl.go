@@ -90,3 +90,14 @@ func (repo *QuestionRepositoryImpl) GetQuestionAndTestCase(id string, limit int)
 
 	return result, nil
 }
+
+func (repo *QuestionRepositoryImpl) GetRandomQuestions(limit int) ([]*entity.Question, error) {
+	result := make([]*entity.Question, 0)
+
+	err := repo.DB.Select("questions.question_id, questions.description, questions.title").Order("rand()").Limit(limit).Find(&result).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}

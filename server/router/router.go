@@ -2,6 +2,7 @@ package router
 
 import (
 	custom_test_repo "executor/repository/test_result_repository"
+	leaderboard_handler "server/handler/leaderboard_game_handler"
 	"server/handler/question_handler"
 	question_repository "server/repository/questions_repository"
 	"server/repository/submission_repository"
@@ -15,10 +16,11 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/rabbitmq/amqp091-go"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
-func Router(db *gorm.DB, e *echo.Echo, rabbitConn *amqp091.Connection) {
+func Router(db *gorm.DB, e *echo.Echo, rabbitConn *amqp091.Connection, redisConn *redis.Client) {
 
 	customTestRepo := custom_test_repo.NewTestResult(db)
 	testRepo := test_cases_repository.NewTestCaseRepository(db)
@@ -32,10 +34,17 @@ func Router(db *gorm.DB, e *echo.Echo, rabbitConn *amqp091.Connection) {
 	questionHandler := question_handler.NewQuestionHandler(questionUseCase)
 	submissionHandler := submission_handler.NewSubmissionHandler(submissionUseCase)
 
+	leaderboardHandler := leaderboard_handler.NewLeaderboardHandler(questionUseCase, submissionUseCase, redisConn)
+
 	e.GET("/questions", questionHandler.GetQuestions)
 	e.GET("/question", questionHandler.GetQuestionById)
 	e.POST("/question", questionHandler.CreateNewQuestion)
 	e.GET("/question/case", questionHandler.GetQuestionAndTestCase)
 	e.POST("/submission", submissionHandler.SubmitCode)
 	e.GET("/submission", submissionHandler.GetSubmissionData)
+	e.GET("/create-room", leaderboardHandler.CreateRoom)
+	e.GET("/join-room", leaderboardHandler.JoinRoom)
+	e.GET("/start", leaderboardHandler.StartGame)
+	e.GET("/submit-code", leaderboardHandler.SubmitCode)
+	e.GET("/submit-code-2", leaderboardHandler.SubmitCode2)
 }

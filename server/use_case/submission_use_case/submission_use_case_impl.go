@@ -31,7 +31,7 @@ func NewSubmissionUseCase(r submission_repository.SubmissionRepository, q questi
 	}
 }
 
-func (u *SubmissionUseCaseImpl) NewSubmission(req *entity.SubmissionPayload) (string, error) {
+func (u *SubmissionUseCaseImpl) NewSubmission(req *entity.SubmissionPayload, testCaseLimit int) (string, error) {
 	id := helper.GenerateId(15)
 	req.SubmissionId = id
 
@@ -47,7 +47,7 @@ func (u *SubmissionUseCaseImpl) NewSubmission(req *entity.SubmissionPayload) (st
 
 	} else {
 		// get test case from db
-		res, err := u.QuestionUseCase.GetQuestionAndTestCase(req.QuestionId, -1)
+		res, err := u.QuestionUseCase.GetQuestionAndTestCase(req.QuestionId, testCaseLimit)
 		if err != nil {
 			return "", err
 		}

@@ -10,4 +10,5 @@ type QuestionRepository interface {
 	GetQuestions(limit, offset int) ([]*entity.Question, error)
 	GetQuestionById(id string) (*entity.Question, error)
 	GetQuestionAndTestCase(id string, limit int) (*join_model.QuestionAnswerMultiTest, error)
+	GetRandomQuestions(limit int) ([]*entity.Question, error)
 }

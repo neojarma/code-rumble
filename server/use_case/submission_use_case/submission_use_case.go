@@ -6,7 +6,7 @@ import (
 )
 
 type SubmissionUseCase interface {
-	NewSubmission(req *entity.SubmissionPayload) (string, error)
+	NewSubmission(req *entity.SubmissionPayload, testCaseLimit int) (string, error)
 	GetSubmission(id string, isCustomTest bool) (*join_model.SubmissionTestResult, error)
 	UpdateSubmissionProgres(req *entity.Submission) error
 }

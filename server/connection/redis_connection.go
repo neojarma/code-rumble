@@ -11,10 +11,9 @@ import (
 
 func GetConnectionRedis() (*redis.Client, error) {
 	// url := os.Getenv("REDIS_URL")
-	url := "redis://guest:guest@localhost:6379"
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr: url,
+		Addr: "localhost:6379",
 	})
 
 	maxRetries := 10
