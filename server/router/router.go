@@ -46,5 +46,5 @@ func Router(db *gorm.DB, e *echo.Echo, rabbitConn *amqp091.Connection, redisConn
 	e.GET("/join-room", leaderboardHandler.JoinRoom)
 	e.GET("/start", leaderboardHandler.StartGame)
 	e.GET("/submit-code", leaderboardHandler.SubmitCode)
-	e.GET("/submit-code-2", leaderboardHandler.SubmitCode2)
+	e.GET("/leaderboard", leaderboardHandler.GetLeaderboard)
 }

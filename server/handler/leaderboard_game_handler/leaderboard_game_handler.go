@@ -7,5 +7,5 @@ type LeaderboardHandler interface {
 	JoinRoom(c echo.Context) error
 	StartGame(c echo.Context) error
 	SubmitCode(c echo.Context) error
-	SubmitCode2(c echo.Context) error
+	GetLeaderboard(c echo.Context) error
 }

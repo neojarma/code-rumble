@@ -223,19 +223,6 @@ func (h *LeaderboardHandlerImpl) StartGame(c echo.Context) error {
 	return nil
 }
 
-func (h *LeaderboardHandlerImpl) SubmitCode2(c echo.Context) error {
-	payload := new(entity.GameSubmissionPayload)
-	err := c.Bind(payload)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	log.Println(payload)
-
-	return nil
-}
-
 func (h *LeaderboardHandlerImpl) SubmitCode(c echo.Context) error {
 	ws, err := h.Upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
@@ -283,7 +270,7 @@ func (h *LeaderboardHandlerImpl) SubmitCode(c echo.Context) error {
 		log.Println("not yet")
 	}
 
-	playerConn := findPlayerWithId(payload.PlayerId, h.Rooms[payload.RoomId].Players)
+	playerConn := h.findPlayerWithId(payload.PlayerId, h.Rooms[payload.RoomId].Players)
 	log.Println("check test case")
 	for _, testResult := range submissionResult.TestResult {
 		if testResult.Result != "PASS" {
@@ -347,7 +334,7 @@ func (h *LeaderboardHandlerImpl) SubmitCode(c echo.Context) error {
 	for i, v := range redisResult {
 		room.Leaderboard = append(room.Leaderboard, &entity.PlayerLeaderboard{
 			PlayerId:    v.Member.(string),
-			DisplayName: findPlayerWithId(v.Member.(string), room.Players).DisplayName,
+			DisplayName: h.findPlayerWithId(v.Member.(string), room.Players).DisplayName,
 			Score:       v.Score,
 			Position:    i + 1,
 		})
@@ -358,7 +345,42 @@ func (h *LeaderboardHandlerImpl) SubmitCode(c echo.Context) error {
 	return nil
 }
 
-func findPlayerWithId(playerId string, players []*entity.Player) *entity.Player {
+func (h *LeaderboardHandlerImpl) GetLeaderboard(c echo.Context) error {
+	ws, err := h.Upgrader.Upgrade(c.Response(), c.Request(), nil)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	defer ws.Close()
+
+	roomId := c.QueryParam("room-id")
+	playerId := c.QueryParam("player-id")
+	room, found := h.Rooms[roomId]
+	if !found {
+		err := ws.WriteJSON(&entity.WSResponse{
+			Message: handler.ROOM_NOT_FOUND,
+		})
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+	}
+
+	player := h.findPlayerWithId(playerId, room.Players)
+	err = player.Connection.WriteJSON(&entity.WSResponse{
+		Message: handler.LEADERBOARD,
+		Data:    room.Leaderboard,
+	})
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+func (h *LeaderboardHandlerImpl) findPlayerWithId(playerId string, players []*entity.Player) *entity.Player {
 	for _, player := range players {
 		if player.PlayerId == playerId {
 			return player
